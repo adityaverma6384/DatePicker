@@ -1,27 +1,34 @@
 <script>
-	
-	import DateInput from './DateInput.svelte';
-	import DatePicker from './DatePicker.svelte';
-  import Appointment from './Appointment.svelte';
+  import Router from 'svelte-spa-router';
+  import DateInput from './DateInput.svelte';
+  import DatePicker from './DatePicker.svelte';
 
-    let selectedDate;
-	
-  </script>
-  
-  <main>
-	
-	<h1>Date Picker</h1>
-  <h2>A:</h2>
-  <DateInput bind:value={selectedDate} label="Enter your date of birth" />
-  <p>Selected Date: {selectedDate}</p>
-  <br> <br> <br>
+  let selectedDate;
 
-  <h2>B:</h2>
-  <DatePicker />
+  // Define your routes as a JavaScript object
+  const routes = {
+    '/variant-a': DateInput,
+    '/variant-b': DatePicker
+  };
+</script>
 
+<main>
+  <h1>Date Picker</h1>
+  <nav>
+    <a href="#/variant-a">Variant A</a> | 
+    <a href="#/variant-b">Variant B</a>
+  </nav>
 
+  <Router {routes}>
+    <DateInput slot="component1" bind:value={selectedDate} />
+    <DatePicker slot="component2" bind:date={selectedDate} />
+  </Router>
 
-  </main>
+  {#if selectedDate}
+    <p>Selected Date: {selectedDate}</p>
+  {/if}
+</main>
+
   
   <style>
 	main {
