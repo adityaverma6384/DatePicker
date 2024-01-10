@@ -5,6 +5,13 @@
   const selectedMonth = writable('');
   const selectedYear = writable('');
 
+  let timer; // Timer to track time spent
+
+  let startTime = null; // Start time of the timer
+  let endTime = null; // End time of the timer
+  let timerRunning = false; // Flag to track if the timer is running
+  let elapsedTime = 0; // Elapsed time in seconds
+
   function generateDaysArray() {
     return Array.from({ length: 31 }, (_, i) => (i + 1).toString());
   }
@@ -20,6 +27,32 @@
 
   function handleDropdownChange(event, store) {
     store.set(event.target.value);
+
+    // Start or resume the timer when a dropdown changes
+    if (!timerRunning) {
+      startTime = new Date();
+      timerRunning = true;
+      updateTimer();
+    }
+  }
+
+  function updateTimer() {
+    if (timerRunning) {
+      const currentTime = new Date();
+      elapsedTime = Math.floor((currentTime - startTime) / 1000); // Elapsed time in seconds
+      timer = setTimeout(updateTimer, 100); // Update every 100 milliseconds
+    }
+  }
+
+  function toggleTimer() {
+    if (timerRunning) {
+      clearTimeout(timer); // Stop the timer
+      timerRunning = false;
+    } else {
+      startTime = new Date();
+      timerRunning = true;
+      updateTimer();
+    }
   }
 </script>
 
@@ -86,6 +119,28 @@
     font-weight: bold;
     margin-top: 15px;
   }
+
+  button {
+    padding: 10px 20px;
+  /*  background-color: #4caf50;  Green background color */
+    color: black;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+  }
+
+  button:hover {
+    background-color: #45a049; /* Darker green on hover */
+  }
+
+
+  .stopwatch {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-top: 15px;
+  }
 </style>
 
 <div class="datepicker-container">
@@ -119,4 +174,10 @@
   </div>
 
   <p class="selected-date">Selected Date: {$selectedYear} - {$selectedMonth} - {$selectedDay}</p>
+
+  <p class="stopwatch">Stopwatch: {elapsedTime} seconds</p>
+
+  <button on:click={toggleTimer}>
+    {timerRunning ? 'Stop Timer' : 'Start Timer'}
+  </button>
 </div>
